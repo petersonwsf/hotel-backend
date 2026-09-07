@@ -84,7 +84,7 @@ public class ClientService {
     }
 
     @Transactional
-    @PreAuthorize("@securityHelper.hasClientPermission(#client)")
+    @PreAuthorize("@securityHelper.hasClientPermission(#id)")
     public Client edit(ClientEditDTO data, Long id) {
         log.info("Starting process to edit client eith ID: {}", id);
         Client client = getById(id);
@@ -110,7 +110,7 @@ public class ClientService {
 
     @Auditable(action = "CLIENT_DELETE", resourceType = "CLIENT")
     @Transactional
-    @PreAuthorize("@securityHelper.hasClientPermission(#client)")
+    @PreAuthorize("@securityHelper.hasClientPermission(#id)")
     public void deleteById(Long id) {
         Client client = getById(id);
         client.delete();
@@ -125,7 +125,7 @@ public class ClientService {
     }
 
     @Auditable(action = "CLIENT_GET_BY_USER_ID", resourceType = "CLIENT")
-    @PreAuthorize("@securityHelper.hasClientPermission(#id)")
+    @PreAuthorize("@securityHelper.hasClientUserPermission(#id)")
     public Client getClientByUserId(Long id) {
         Client client = repository.findByUserId(id)
                         .orElseThrow(() -> new ResourceNotFoundException("Client with user id " + id + " does not exists"));
@@ -159,7 +159,7 @@ public class ClientService {
             user.setLogin(email);
         }
         if (name != null) {
-            user.setPhoneNumber(name);
+            user.setName(name);
         }
         if (phoneNumber != null) {
             user.setPhoneNumber(phoneNumber);

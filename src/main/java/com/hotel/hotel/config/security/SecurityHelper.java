@@ -1,5 +1,6 @@
 package com.hotel.hotel.config.security;
 
+import com.hotel.hotel.modules.client.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,10 +18,20 @@ public class SecurityHelper {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
     
     public boolean hasClientPermission(Long id) {
         User user = getAuthenticatedUser();
-        if (!id.equals(user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
+        Client client = clientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+        if (!client.getUser().getId().equals(user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
+        return true;
+    }
+
+    public boolean hasClientUserPermission(Long id) {
+        User user = getAuthenticatedUser();
+        if (!user.getId().equals(user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
         return true;
     }
 
