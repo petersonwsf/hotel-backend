@@ -67,15 +67,22 @@ public class FileService {
     }
 
     @Transactional
-    public void syncRoomImages(Long roomId, List<FileResponse> remainingImages, List<MultipartFile> newImages, Room room) {
+    public void syncRoomImages(Long roomId, List<String> remainingImages, List<MultipartFile> newImages, Room room) {
         List<File> currentFiles = repository.findByRoomId(roomId);
-        Set<Long> idsToKeep = remainingImages.stream()
-                .map(FileResponse::id)
-                .collect(Collectors.toSet());
+        Set<String> keysToKeep = (remainingImages != null)
+                ? remainingImages.stream().collect(Collectors.toSet())
+                : Set.of();
+
         currentFiles.stream()
-                .filter(file -> !idsToKeep.contains(file.getId()))
-                .forEach(file -> this.deleteById(file.getId()));
-        this.uploadMultipleFilesForRoom(newImages, room);
+                .filter(file -> !keysToKeep.contains(file.getMinioKey()))
+                .forEach(file -> {
+                    this.deleteFromMinio(file.getMinioKey());
+                    repository.delete(file);
+                });
+
+        if (newImages != null && !newImages.isEmpty()) {
+            this.uploadMultipleFilesForRoom(newImages, room);
+        }
     }
 
     @Transactional

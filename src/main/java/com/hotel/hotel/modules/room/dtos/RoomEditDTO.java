@@ -20,7 +20,7 @@ public record RoomEditDTO(
     @Min(value = 1)
     Integer capacity,
     Category category,
-    List<FileResponse> remainingImages,
+    List<String> remainingImages,
     @NotNull
     String description
 ) {

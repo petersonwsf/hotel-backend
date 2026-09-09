@@ -103,7 +103,9 @@ public class RoomService {
         String beforeUpdate = null;
         beforeUpdate = serializeForAudit(room);
 
-        fileService.syncRoomImages(id, data.remainingImages(), newImages, room);
+        if (data.remainingImages() != null && !data.remainingImages().isEmpty()) {
+            fileService.syncRoomImages(id, data.remainingImages(), newImages, room);
+        }
         
         room.edit(data);
         auditService.recordUpdate("ROOM_UPDATE", "ROOM", String.valueOf(id), beforeUpdate, room);
