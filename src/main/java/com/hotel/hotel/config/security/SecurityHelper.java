@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.hotel.hotel.config.exceptions.AccessResourceDeniedException;
 import com.hotel.hotel.config.exceptions.ResourceNotFoundException;
 import com.hotel.hotel.modules.client.model.Client;
-import com.hotel.hotel.modules.reservation.model.Reservation;
 import com.hotel.hotel.modules.reservation.repository.ReservationRepository;
 import com.hotel.hotel.modules.user.model.Role;
 import com.hotel.hotel.modules.user.model.User;

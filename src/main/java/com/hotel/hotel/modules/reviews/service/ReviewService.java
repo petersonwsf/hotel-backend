@@ -13,7 +13,6 @@ import com.hotel.hotel.modules.reviews.model.Review;
 import com.hotel.hotel.modules.reviews.model.Sentiment;
 import com.hotel.hotel.modules.reviews.repository.ReviewRepository;
 import com.hotel.hotel.modules.reviews.repository.specs.ReviewSpecification;
-import com.hotel.hotel.modules.user.model.User;
 import com.hotel.hotel.modules.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 @Service

@@ -28,7 +28,6 @@ import com.hotel.hotel.modules.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
