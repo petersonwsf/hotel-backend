@@ -37,20 +37,28 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.GET, "/room/disponibility/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/review").permitAll()
                         // ROTAS PRIVADAS
+
+                        // CLIENTES
                         .requestMatchers(HttpMethod.GET, "/client").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
+                        // ROOM
                         .requestMatchers(HttpMethod.POST, "/room").hasAuthority( "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/room/{id}").hasAuthority( "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/room/{id}").hasAuthority( "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/room/finishCleaning/{id}").hasAnyAuthority( "ROLE_ATTENDANT","ROLE_ADMIN")
+                        // RESERVATION
                         .requestMatchers(HttpMethod.PATCH, "/reservation/checkIn/{id}", "/reservation/checkOut/{id}").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/reservation").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
+                        // FILE
                         .requestMatchers(HttpMethod.DELETE, "/file/{id}").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/register").hasAuthority("ROLE_ADMIN")
+                        // GET
                         .requestMatchers(HttpMethod.GET, "/user").hasAuthority("ROLE_ADMIN")
+                        // REVIEW
                         .requestMatchers(HttpMethod.PATCH, "/review/reply").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/review").hasAuthority("ROLE_CLIENT")
                         .requestMatchers(HttpMethod.PATCH, "/review/{id}").hasAuthority("ROLE_CLIENT")
                         .requestMatchers(HttpMethod.DELETE, "/review/{id}").hasAuthority("ROLE_CLIENT")
+                        // NOTIFICATIONS
                         .requestMatchers(HttpMethod.GET, "/notification/${id}").hasAuthority("ROLE_CLIENT")
                         .requestMatchers(HttpMethod.PATCH, "/notification/{id}").hasAuthority("ROLE_CLIENT")
                         .anyRequest().authenticated()
