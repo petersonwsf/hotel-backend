@@ -3,7 +3,6 @@ package com.hotel.hotel.modules.room.dtos;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.hotel.hotel.modules.files.dto.FileResponse;
 import com.hotel.hotel.modules.room.model.Category;
 import com.hotel.hotel.modules.room.model.StatusRoom;
 

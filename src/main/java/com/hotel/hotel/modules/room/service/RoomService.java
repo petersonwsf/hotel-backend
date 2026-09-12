@@ -7,6 +7,7 @@ import com.hotel.hotel.config.exceptions.ResourceNotFoundException;
 import com.hotel.hotel.modules.audit.AuditService;
 import com.hotel.hotel.modules.audit.Auditable;
 import com.hotel.hotel.modules.files.service.FileService;
+import com.hotel.hotel.modules.reviews.dto.RoomRatingSummaryDTO;
 import com.hotel.hotel.modules.room.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -80,7 +81,8 @@ public class RoomService {
         return rooms.map(room -> {
             List<String> files = fileService.listImagesByRoom(room.getId());
             String image = files.isEmpty() ? null : files.getFirst();
-            return new RoomListDTO(room, image);
+            RoomRatingSummaryDTO ratingSummary = getRatingRoom(room.getId());
+            return new RoomListDTO(room, image, ratingSummary);
         });
     }
 
@@ -92,7 +94,8 @@ public class RoomService {
         List<String> images = fileService.listImagesByRoom(room.getId());
 
         log.info("Returning details of the room with ID: {}", id);
-        return new RoomDetailsImageDTO(room, images);
+        RoomRatingSummaryDTO ratingSummary = getRatingRoom(room.getId());
+        return new RoomDetailsImageDTO(room, images, ratingSummary);
     }
 
     @Transactional
@@ -138,6 +141,10 @@ public class RoomService {
         Specification<Room> specFinal = specId.and(RoomSpecification.roomAvailableOn(verifyData.checkIn(), verifyData.checkOut(), verifyData.reservationId()));
         Optional<Room> room = repository.findOne(specFinal);
         return room.isPresent();
+    }
+
+    public RoomRatingSummaryDTO getRatingRoom(Long id) {
+        return repository.findRatingSummaryByRoomId(id);
     }
 
     private String serializeForAudit(Room room) {

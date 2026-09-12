@@ -29,12 +29,13 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         //ROTAS PÚBLICAS
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room", "/room/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/file/room/{id}", "/file/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/disponibility/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/review").permitAll()
                         // ROTAS PRIVADAS
                         .requestMatchers(HttpMethod.GET, "/client").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/room").hasAuthority( "ROLE_ADMIN")
@@ -46,7 +47,13 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.DELETE, "/file/{id}").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/register").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/user").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/review/reply").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/review").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers(HttpMethod.PATCH, "/review/{id}").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers(HttpMethod.DELETE, "/review/{id}").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers(HttpMethod.GET, "/notification/${id}").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers(HttpMethod.PATCH, "/notification/{id}").hasAuthority("ROLE_CLIENT")
+                        .anyRequest().authenticated()
                 ).exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(401);

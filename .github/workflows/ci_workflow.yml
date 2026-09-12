@@ -22,6 +22,3 @@ jobs:
     
     - name: Realizar teste de qualidade de código
       run: mvn pmd:check com.github.spotbugs:spotbugs-maven-plugin:check
-    
-    - name: Subir banco de dados
-      run: docker compose up -d
