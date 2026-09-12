@@ -33,6 +33,13 @@ public record ContactInformationDTO(
     
 ) {
     public ContactInformationDTO(ContactInformation contactInformation) {
-        this(contactInformation.getPhoneNumber(), contactInformation.getStreet(), contactInformation.getNeighborhood(), contactInformation.getNumber(), contactInformation.getCity(), contactInformation.getState(), contactInformation.getComplement(), contactInformation.getPostalCode());
+        this(contactInformation.getPhoneNumber(),
+            contactInformation.getStreet(),
+            contactInformation.getNeighborhood(),
+            contactInformation.getNumber(),
+            contactInformation.getCity(),
+            contactInformation.getState(),
+            contactInformation.getComplement(),
+            contactInformation.getPostalCode());
     }
 }
