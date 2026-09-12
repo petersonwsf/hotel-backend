@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import com.hotel.hotel.modules.reviews.dto.RoomRatingSummaryDTO;
 import com.hotel.hotel.modules.room.model.Category;
 import com.hotel.hotel.modules.room.model.Room;
 import com.hotel.hotel.modules.room.model.StatusRoom;
@@ -19,9 +20,10 @@ public record RoomListDTO(
         List<String> amenities,
         Integer capacity,
         Category category,
-        String image
+        String image,
+        RoomRatingSummaryDTO ratingSummary
 ) {
-    public RoomListDTO(Room room, String image) {
+    public RoomListDTO(Room room, String image, RoomRatingSummaryDTO ratingSummary) {
         this(
                 room.getId(),
                 room.getCode(),
@@ -33,7 +35,8 @@ public record RoomListDTO(
                 Arrays.asList(room.getAmenities()),
                 room.getCapacity(),
                 room.getCategory(),
-                image
+                image,
+                ratingSummary
         );
     }
 }

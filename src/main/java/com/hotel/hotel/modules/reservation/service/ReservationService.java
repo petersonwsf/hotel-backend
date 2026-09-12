@@ -10,6 +10,8 @@ import com.hotel.hotel.config.exceptions.RoomNotAvailable;
 import com.hotel.hotel.modules.audit.AuditService;
 import com.hotel.hotel.modules.audit.Auditable;
 import com.hotel.hotel.modules.files.service.FileService;
+import com.hotel.hotel.modules.notification.service.NotificationService;
+import com.hotel.hotel.modules.reviews.dto.RoomRatingSummaryDTO;
 import com.hotel.hotel.modules.room.repository.RoomRepository;
 import com.hotel.hotel.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,9 @@ public class ReservationService {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Auditable(action = "RESERVATION_CREATE", resourceType = "RESERVATION")
     @Transactional
     public ReservationDetailsDTO create(ReservationSaveDTO data) {
@@ -70,7 +75,8 @@ public class ReservationService {
         reservation.setTotalAmount(totalAmount);
         Reservation newReservation = repository.save(reservation);
         log.info("The reservation was successfully created in the database");
-        ReservationDetailsDTO response = new ReservationDetailsDTO(newReservation, new RoomDetailsImageDTO(room, files));
+        RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(room.getId());
+        ReservationDetailsDTO response = new ReservationDetailsDTO(newReservation, new RoomDetailsImageDTO(room, files, ratingSummary));
         return response;
     }
 
@@ -92,7 +98,8 @@ public class ReservationService {
 
         return reservations.map(reservation -> {
             var files = fileService.listImagesByRoom(reservation.getRoom().getId());
-            return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files));
+            RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());
+            return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files, ratingSummary));
         });
     }
 
@@ -102,7 +109,15 @@ public class ReservationService {
         var reservation = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         var files = fileService.listImagesByRoom(reservation.getRoom().getId());
-        return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files));
+        RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());
+        return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files, ratingSummary));
+    }
+
+    @PreAuthorize("@securityHelper.hasClientReservationPermission(#id)")
+    public Reservation getEntityById(Long id) {
+        Reservation reservation = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não existente"));
+        return reservation;
     }
 
     @Transactional
@@ -136,7 +151,8 @@ public class ReservationService {
         auditService.recordUpdate("RESERVATION_UPDATE", "RESERVATION", String.valueOf(id), beforeUpdate, reservation);
         log.info("Reservation with ID: {} was successfully edited", id);
         var files = fileService.listImagesByRoom(reservation.getRoom().getId());
-        return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files));
+        RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());
+        return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files, ratingSummary));
     }
 
     @Transactional
@@ -182,6 +198,7 @@ public class ReservationService {
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         var room = reservation.getRoom();
         room.changeStatus(StatusRoom.CLEANING);
+        notificationService.create(reservation.getUser(), reservation);
         reservation.changeStatus(Status.CHECKED_OUT);
     }
 
@@ -203,7 +220,8 @@ public class ReservationService {
         if (reservationPage.getContent().size() == 0) throw new ResourceNotFoundException("Não há reservas");
         return reservationPage.map(reservation -> {
             var files = fileService.listImagesByRoom(reservation.getRoom().getId());
-            return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files));
+            RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());
+            return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files, ratingSummary));
         });
     }
 

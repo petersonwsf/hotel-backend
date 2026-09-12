@@ -1,6 +1,10 @@
 package com.hotel.hotel.config.security;
 
 import com.hotel.hotel.modules.client.repository.ClientRepository;
+import com.hotel.hotel.modules.notification.model.Notification;
+import com.hotel.hotel.modules.notification.repository.NotificationRepository;
+import com.hotel.hotel.modules.reviews.dto.ReviewSaveDTO;
+import com.hotel.hotel.modules.reviews.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,11 +25,33 @@ public class SecurityHelper {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
     
     public boolean hasClientPermission(Long id) {
         User user = getAuthenticatedUser();
         Client client = clientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
         if (!client.getUser().getId().equals(user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
+        return true;
+    }
+
+    public boolean hasUserPermissionReviewCreate(ReviewSaveDTO review) {
+        User user = getAuthenticatedUser();
+        var reservation = reservationRepository.findById(review.reservationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
+        if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
+        return true;
+    }
+
+    public boolean hasUserPermissionReview(Long id) {
+        User user = getAuthenticatedUser();
+        var review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
+        if (!review.getUser().getId().equals(user.getId())) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
         return true;
     }
 
@@ -51,6 +77,14 @@ public class SecurityHelper {
         }
         var reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
         if ((reservation.getUser().getId() != user.getId()) && user.getRole() == Role.CLIENT) throw new AccessResourceDeniedException("Você não tem acesso a este recurso");
+        return true;
+    }
+
+    public boolean hasUserNotificationPermission(Long id) {
+        User user = getAuthenticatedUser();
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Notificação não encontrada"));
+        if (!notification.getUser().getId().equals(user.getId())) throw new AccessResourceDeniedException("Você não permissão para acessar este recurso");
         return true;
     }
 
