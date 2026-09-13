@@ -2,6 +2,7 @@ package com.hotel.hotel.modules.reservation.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import com.hotel.hotel.modules.audit.AuditService;
 import com.hotel.hotel.modules.audit.Auditable;
 import com.hotel.hotel.modules.files.service.FileService;
 import com.hotel.hotel.modules.notification.service.NotificationService;
+import com.hotel.hotel.modules.rabbitmq.enums.ReservationEventType;
+import com.hotel.hotel.modules.rabbitmq.service.ReservationEventPublisher;
 import com.hotel.hotel.modules.reviews.dto.RoomRatingSummaryDTO;
 import com.hotel.hotel.modules.room.repository.RoomRepository;
 import com.hotel.hotel.modules.user.service.UserService;
@@ -50,6 +53,9 @@ public class ReservationService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ReservationEventPublisher publisher;
 
     @Autowired
     private ReservationRepository repository;
@@ -163,6 +169,7 @@ public class ReservationService {
          var reservation = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         reservation.changeStatus(Status.CANCELED);
+        publisher.publishEvent(ReservationEventType.RESERVATION_CANCELLED, reservation, UUID.randomUUID().toString());
         log.info("Reservation with ID: {} successfully canceled" , id);
     }
 

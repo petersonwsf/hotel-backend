@@ -30,7 +30,7 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         //ROTAS PÚBLICAS
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room", "/room/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/file/room/{id}", "/file/{id}").permitAll()
@@ -50,7 +50,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.GET, "/reservation").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
                         // FILE
                         .requestMatchers(HttpMethod.DELETE, "/file/{id}").hasAnyAuthority("ROLE_ATTENDANT", "ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/register").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/user/register").hasAuthority("ROLE_ADMIN")
                         // GET
                         .requestMatchers(HttpMethod.GET, "/user").hasAuthority("ROLE_ADMIN")
                         // REVIEW
