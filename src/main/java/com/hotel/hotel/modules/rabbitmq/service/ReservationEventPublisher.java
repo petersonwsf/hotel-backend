@@ -1,8 +1,6 @@
 package com.hotel.hotel.modules.rabbitmq.service;
 
-import com.hotel.hotel.config.rabbitmq.RabbitMqConfig;
-import com.hotel.hotel.modules.rabbitmq.dtos.ReservationDataEnvelope;
-import com.hotel.hotel.modules.rabbitmq.enums.PaymentEventsTypes;
+import com.hotel.hotel.modules.rabbitmq.dtos.MessageDataEnvelope;
 import com.hotel.hotel.modules.rabbitmq.enums.ReservationEventType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.TopicExchange;
@@ -24,7 +22,8 @@ public class ReservationEventPublisher {
     }
 
     public <T> void publishEvent(ReservationEventType eventType, T eventData, String correlationId) {
-        ReservationDataEnvelope<T> envelope = ReservationDataEnvelope.build(eventType, eventData, correlationId);
+
+        MessageDataEnvelope<T> envelope = MessageDataEnvelope.build(eventType, eventData, correlationId);
         String routingKey = eventType.getValue();
         Map<String, Object> payload = Map.of(
                 "pattern", eventType.getValue(),

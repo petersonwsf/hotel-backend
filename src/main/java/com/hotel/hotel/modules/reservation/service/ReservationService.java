@@ -12,16 +12,20 @@ import com.hotel.hotel.modules.audit.AuditService;
 import com.hotel.hotel.modules.audit.Auditable;
 import com.hotel.hotel.modules.files.service.FileService;
 import com.hotel.hotel.modules.notification.service.NotificationService;
+import com.hotel.hotel.modules.rabbitmq.dtos.ReservationDataMessage;
 import com.hotel.hotel.modules.rabbitmq.enums.ReservationEventType;
 import com.hotel.hotel.modules.rabbitmq.service.ReservationEventPublisher;
 import com.hotel.hotel.modules.reviews.dto.RoomRatingSummaryDTO;
 import com.hotel.hotel.modules.room.repository.RoomRepository;
+import com.hotel.hotel.modules.user.model.User;
 import com.hotel.hotel.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.hotel.hotel.modules.reservation.dtos.ReservationDetailsDTO;
@@ -169,7 +173,8 @@ public class ReservationService {
          var reservation = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         reservation.changeStatus(Status.CANCELED);
-        publisher.publishEvent(ReservationEventType.RESERVATION_CANCELLED, reservation, UUID.randomUUID().toString());
+        User authentication = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        publisher.publishEvent(ReservationEventType.RESERVATION_CANCELLED, new ReservationDataMessage(reservation, authentication), UUID.randomUUID().toString());
         log.info("Reservation with ID: {} successfully canceled" , id);
     }
 

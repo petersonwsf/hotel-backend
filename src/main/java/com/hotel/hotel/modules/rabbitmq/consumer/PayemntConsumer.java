@@ -22,13 +22,8 @@ public class PayemntConsumer {
     private ReservationService reservationService;
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
-    public void handlePayments(Map<String, Object> payload) {
-        System.out.println("Chegou");
-        log.info("Mensagem recebida: {}", payload);
-
-        Object eventType = payload.get("eventType");
-        log.info("Event type: {}", eventType);
-        /*PaymentMessageBroker envelope = message.data();
+    public void handlePayments(NestMessageWrapper<PaymentMessageBroker> payload) {
+        PaymentMessageBroker envelope = message.data();
         if (envelope == null || envelope.data() == null) {
             log.warn("Received empty or invalid message payload");
             return;
@@ -50,6 +45,6 @@ public class PayemntConsumer {
             default:
                 log.debug("Event '{}' ignored by reservation domain", eventType);
                 break;
-        }*/
+        }
     }
 }

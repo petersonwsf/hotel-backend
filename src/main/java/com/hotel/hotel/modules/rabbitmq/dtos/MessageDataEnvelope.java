@@ -5,7 +5,7 @@ import com.hotel.hotel.modules.rabbitmq.enums.ReservationEventType;
 import java.time.Instant;
 import java.util.UUID;
 
-public record ReservationDataEnvelope<T>(
+public record MessageDataEnvelope<T>(
     String eventId,
     ReservationEventType eventType,
     String eventVersion,
@@ -14,8 +14,8 @@ public record ReservationDataEnvelope<T>(
     String correlationId,
     T data
 ) {
-    public static <T> ReservationDataEnvelope<T> build(ReservationEventType eventType, T data, String correlationId) {
-        return new ReservationDataEnvelope<>(
+    public static <T> MessageDataEnvelope<T> build(ReservationEventType eventType, T data, String correlationId) {
+        return new MessageDataEnvelope<>(
             UUID.randomUUID().toString(),
             eventType,
             "1.0",
