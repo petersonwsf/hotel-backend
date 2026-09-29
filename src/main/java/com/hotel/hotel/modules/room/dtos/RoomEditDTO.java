@@ -20,7 +20,6 @@ public record RoomEditDTO(
     Integer capacity,
     Category category,
     List<String> remainingImages,
-    @NotNull
     String description
 ) {
 }

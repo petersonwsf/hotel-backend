@@ -225,11 +225,11 @@ public class ReservationService {
                 .and(ReservationSpecification.floorIn(filters.floor()))
                 .and(ReservationSpecification.statusIn(filters.status()))
                 .and(ReservationSpecification.userNameContains(filters.guestName()))
-                .and(ReservationSpecification.statusIn(filters.status()));
+                .and(ReservationSpecification.statusIn(filters.status()))
+                .and(ReservationSpecification.userIdEqual(clientId));
 
         Page<Reservation> reservationPage = repository.findAll(filter, pagination);
 
-        if (reservationPage.getContent().size() == 0) throw new ResourceNotFoundException("Não há reservas");
         return reservationPage.map(reservation -> {
             var files = fileService.listImagesByRoom(reservation.getRoom().getId());
             RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());

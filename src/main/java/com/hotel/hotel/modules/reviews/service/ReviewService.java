@@ -84,7 +84,7 @@ public class ReviewService {
     }
 
     @Transactional
-    @Auditable(action = "REVIEW_CREATED", resourceType = "REVIEW")
+    @Auditable(action = "REVIEW_REPLIED", resourceType = "REVIEW")
     public Review replyComment(ReviewUpdateDTO reviewData, Long id) {
         Review review = findReviewById(id);
         review.setReply(reviewData.reply());

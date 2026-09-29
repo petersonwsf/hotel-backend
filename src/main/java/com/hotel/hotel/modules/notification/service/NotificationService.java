@@ -1,6 +1,7 @@
 package com.hotel.hotel.modules.notification.service;
 
 import com.hotel.hotel.config.exceptions.ResourceNotFoundException;
+import com.hotel.hotel.modules.audit.Auditable;
 import com.hotel.hotel.modules.notification.dto.NotificationResponse;
 import com.hotel.hotel.modules.notification.model.Notification;
 import com.hotel.hotel.modules.notification.model.StatusNotification;
@@ -39,6 +40,7 @@ public class NotificationService {
 
     @Transactional
     @PreAuthorize("@securityHelper.hasUserNotificationPermission(#id)")
+    @Auditable(action = "UPDATE_NOTIFICATION", resourceType = "NOTIFICATION")
     public void updateStatus(Long id, StatusNotification status) {
         Notification notification = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notificação não encontrada"));

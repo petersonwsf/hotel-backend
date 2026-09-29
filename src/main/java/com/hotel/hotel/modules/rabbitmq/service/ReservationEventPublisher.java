@@ -25,7 +25,7 @@ public class ReservationEventPublisher {
 
         MessageDataEnvelope<T> envelope = MessageDataEnvelope.build(eventType, eventData, correlationId);
         String routingKey = eventType.getValue();
-        Map<String, Object> payload = Map.of(
+        Map payload = Map.of(
                 "pattern", eventType.getValue(),
                 "data", envelope
         );

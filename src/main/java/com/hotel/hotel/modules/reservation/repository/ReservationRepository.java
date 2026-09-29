@@ -15,7 +15,7 @@ import com.hotel.hotel.modules.reservation.model.Status;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>, JpaSpecificationExecutor<Reservation> {
     Page<Reservation> findByStatusNot(Pageable pageable, Status status);
-    List<Reservation> findByUserId(Long clientId);
+    Page<Reservation> findByUserId(Pageable pageable, Long clientId);
     Page<Reservation> findByUserId(Long clientId, Pageable pageable);
 
 

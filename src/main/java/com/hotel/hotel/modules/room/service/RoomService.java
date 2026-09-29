@@ -148,11 +148,11 @@ public class RoomService {
     }
 
     private String serializeForAudit(Room room) {
-    try {
-        return objectMapper.writeValueAsString(room);
-    } catch (JsonProcessingException e) {
-        log.warn("Erro ao processar JSON para auditoria: {}", e.getMessage());
-        return null;
+        try {
+            return objectMapper.writeValueAsString(room);
+        } catch (JsonProcessingException e) {
+            log.warn("Erro ao processar JSON para auditoria: {}", e.getMessage());
+            return null;
+        }
     }
-}
 }
