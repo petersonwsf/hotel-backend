@@ -35,9 +35,8 @@ public class ReviewSpecification {
             if (replied == null) return null;
             if (replied) {
                 return root.get("reply").isNotNull();
-            } else {
-                return root.get("reply").isNull();
             }
+            return null;
         };
     }
 
@@ -53,9 +52,8 @@ public class ReviewSpecification {
             if (commented == null) return null;
             if (commented) {
                 return root.get("comment").isNotNull();
-            } else {
-                return root.get("comment").isNull();
             }
+            return null;
         };
     }
 }

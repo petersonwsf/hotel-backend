@@ -6,6 +6,8 @@ public record PaymentDataBase(
     Long paymentId,
     Long reservationId,
     Long userId,
+    String recipientEmail,
+    String recipientName,
     String stripePaymentIntentId,
     BigDecimal amountAuthorized,
     BigDecimal amountCaptured,

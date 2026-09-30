@@ -57,6 +57,7 @@ public class ReviewService {
     }
 
     public Page<Review> listReview(ReviewQueryParams filters, Pageable pagination) {
+        System.out.println(filters);
         Specification<Review> filter = (root, query, builder) -> null;
         filter = filter.and(ReviewSpecification.filterByUser(filters.userId()))
                 .and(ReviewSpecification.filterByRoom(filters.roomId()))
