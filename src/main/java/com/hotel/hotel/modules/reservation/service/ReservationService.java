@@ -87,6 +87,7 @@ public class ReservationService {
         log.info("The reservation was successfully created in the database");
         RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(room.getId());
         ReservationDetailsDTO response = new ReservationDetailsDTO(newReservation, new RoomDetailsImageDTO(room, files, ratingSummary));
+        publisher.publishEvent(ReservationEventType.RESERVATION_CREATED, new ReservationDataMessage(reservation, reservation.getUser()), UUID.randomUUID().toString());
         return response;
     }
 
@@ -162,6 +163,7 @@ public class ReservationService {
         log.info("Reservation with ID: {} was successfully edited", id);
         var files = fileService.listImagesByRoom(reservation.getRoom().getId());
         RoomRatingSummaryDTO ratingSummary = roomRepository.findRatingSummaryByRoomId(reservation.getRoom().getId());
+        publisher.publishEvent(ReservationEventType.RESERVATION_UPDATED, new ReservationDataMessage(reservation, reservation.getUser()), UUID.randomUUID().toString());
         return new ReservationDetailsDTO(reservation, new RoomDetailsImageDTO(reservation.getRoom(), files, ratingSummary));
     }
 
@@ -173,8 +175,7 @@ public class ReservationService {
          var reservation = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         reservation.changeStatus(Status.CANCELED);
-        User authentication = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        publisher.publishEvent(ReservationEventType.RESERVATION_CANCELLED, new ReservationDataMessage(reservation, authentication), UUID.randomUUID().toString());
+        publisher.publishEvent(ReservationEventType.RESERVATION_CANCELLED, new ReservationDataMessage(reservation, reservation.getUser()), UUID.randomUUID().toString());
         log.info("Reservation with ID: {} successfully canceled" , id);
     }
 
@@ -186,6 +187,7 @@ public class ReservationService {
          var reservation = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
         reservation.changeStatus(Status.CONFIRMED);
+        publisher.publishEvent(ReservationEventType.RESERVATION_CONFIRMED, new ReservationDataMessage(reservation, reservation.getUser()), UUID.randomUUID().toString());
         log.info("Reservation with ID: {} successfully confirmed" , id);
     }
 

@@ -1,11 +1,11 @@
 package com.hotel.hotel.modules.rabbitmq.consumer;
 
+import com.hotel.hotel.modules.rabbitmq.dtos.MessageWrapper;
 import com.hotel.hotel.modules.rabbitmq.dtos.PaymentMessageBroker;
 import com.hotel.hotel.modules.reservation.service.ReservationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,8 +16,8 @@ public class PaymentConsumer {
     private ReservationService reservationService;
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
-    public void handlePayments(@Payload("data") PaymentMessageBroker envelope) {
-
+    public void handlePayments(MessageWrapper wrapper) {
+        PaymentMessageBroker envelope = wrapper.data();
         if (envelope == null || envelope.data() == null) {
             log.warn("Received empty or invalid message payload");
             return;
