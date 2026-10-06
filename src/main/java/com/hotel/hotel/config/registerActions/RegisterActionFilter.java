@@ -2,6 +2,7 @@ package com.hotel.hotel.config.registerActions;
 
 import java.io.IOException;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,9 +20,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Registra ações do usuário (CREATE_RESERVATION, etc.) de forma
+ * best-effort: erros NUNCA interrompem o fluxo principal.
+ */
 @Slf4j
 @Component
-public class RegisterActionFilter extends OncePerRequestFilter{
+public class RegisterActionFilter extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
@@ -33,17 +38,28 @@ public class RegisterActionFilter extends OncePerRequestFilter{
     private UserActionRepository actionRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         var action = getActionFromRequest(request);
 
         if (action != null) {
             var token = getToken(request);
             if (token != null) {
-                var subject = tokenService.getSubject(token);
-                User user = userRepository.findByUsername(subject);
-                log.info("Register action: {} by user: {}", action.name(), user.getId());
-                var actionSaved = new UserAction(action, user);
-                actionRepository.save(actionSaved);
+                try {
+                    var subject = tokenService.getSubject(token);
+                    User user = userRepository.findByUsername(subject);
+                    if (user != null) {
+                        log.info("Register action: {} by user: {}", action.name(), user.getId());
+                        var actionSaved = new UserAction(action, user);
+                        actionRepository.save(actionSaved);
+                    }
+                } catch (JWTVerificationException ex) {
+                    // Token inválido: registro de ação é best-effort, não interrompe a requisição
+                    log.debug("Não foi possível registrar ação — token inválido | action={}", action.name());
+                } catch (Exception ex) {
+                    // Falha de registro nunca deve quebrar a requisição principal
+                    log.warn("Falha ao registrar ação de usuário | action={}", action.name(), ex);
+                }
             }
         }
 
