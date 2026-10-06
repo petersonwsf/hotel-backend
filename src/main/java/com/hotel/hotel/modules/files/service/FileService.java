@@ -58,11 +58,14 @@ public class FileService {
             log.info("File {} successfully created", fileData.getOriginalFilename());
             return objectName;
         } catch (ErrorResponseException e) {
-            throw new MyCustomStorageException(e.getMessage());
+            log.error("Erro de resposta do MinIO ao fazer upload | arquivo={}", fileData.getOriginalFilename(), e);
+            throw new MyCustomStorageException("Falha ao enviar arquivo para o armazenamento.");
         } catch (IOException e) {
-            throw new MyCustomStorageException(e.getMessage());
+            log.error("Erro de I/O ao fazer upload | arquivo={}", fileData.getOriginalFilename(), e);
+            throw new MyCustomStorageException("Falha ao ler o arquivo enviado.");
         } catch (Exception e) {
-            throw new RuntimeException("Unexpected error during upload", e);
+            log.error("Erro inesperado ao fazer upload | arquivo={}", fileData.getOriginalFilename(), e);
+            throw new MyCustomStorageException("Erro inesperado ao processar o arquivo.");
         }
     }
 
@@ -111,7 +114,7 @@ public class FileService {
             );
         } catch (Exception e) {
             log.error("Failed to delete object from MinIO: {}", objectName, e);
-            throw new MyCustomStorageException("Failed to remove file from storage: " + e.getMessage());
+            throw new MyCustomStorageException("Falha ao remover o arquivo do armazenamento.");
         }
     }
 
