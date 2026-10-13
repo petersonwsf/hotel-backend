@@ -20,7 +20,6 @@ src/main/resources/application.yml
 *.iws
 *.iml
 *.ipr
-*.env
 
 ### NetBeans ###
 /nbproject/private/
