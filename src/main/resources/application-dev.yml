@@ -32,8 +32,8 @@ spring:
 
 minio:
   url: http://localhost:9003
-  accessKey: minio_hotel_root_user
-  secretKey: minio_hotel_root_password
+  accessKey: rustfs_hotel_root_user
+  secretKey: rustfs_hotel_root_password
   bucket: hotelfiles
 
 logging:

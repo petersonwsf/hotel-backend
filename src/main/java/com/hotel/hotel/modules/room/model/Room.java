@@ -58,6 +58,7 @@ public class Room {
         this.amenities = data.amenities().toArray(new String[0]);
         this.capacity = data.capacity();
         this.category = data.category();
+        this.description = data.description();
         this.active = true;
     }
 
@@ -73,6 +74,9 @@ public class Room {
         }
         if (data.category() != null) {
             this.category = data.category();
+        }
+        if (data.description() != null) {
+            this.description = data.description();
         }
     }
 

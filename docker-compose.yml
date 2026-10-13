@@ -1,32 +1,30 @@
 services:
   postgresql:
     container_name: banco_hotel
-    image: bitnami/postgresql:latest
+    image: postgres:17
     ports:
       - 5432:5432
     environment:
-      - POSTGRESQL_USERNAME=root
-      - POSTGRESQL_PASSWORD=root
-      - POSTGRESQL_DATABASE=reservaHotel
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: reservaHotel
     volumes:
-      - postgres_data:/bitnami/postgresql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - hotel-net
-  minio:
-    container_name: hotel_files_minio
-    hostname: minio
-    image: minio/minio
+  rustfs:
+    container_name: rustfs
+    image: rustfs/rustfs:latest
     restart: unless-stopped
-    command: server /data --console-address ":9001"
     ports:
       - "9003:9000"
       - "9005:9001"
     env_file:
-      - minio.env
+      - rustfs.env
     volumes:
-      - hotel_files_minio_volume:/data
+      - hotel_files_rustfs_volume:/data
     networks:
-      - hotel_files_minio_stack
+      - hotel-net
   adminer:
     image: adminer:latest
     container_name: hotel_adminer
@@ -39,11 +37,10 @@ services:
 
 
 networks:
-  hotel_files_minio_stack:
+  hotel_files_rustfs_stack:
   hotel-net:
     driver: bridge
 
 volumes:
   postgres_data:
-    driver: local
-  hotel_files_minio_volume:
+  hotel_files_rustfs_volume:
