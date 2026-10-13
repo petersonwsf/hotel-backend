@@ -1,0 +1,51 @@
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-exception: false
+    include-binding-errors: never
+
+spring:
+  servlet:
+    multipart:
+      resolve-lazily: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/reservaHotel}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        temp:
+          use_jdbc_metadata_defaults: false
+  mvc:
+    problemdetails:
+      enabled: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:admin}
+    exchange: ${RABBITMQ_EXCHANGE:exchange}
+    queue: ${RABBITMQ_QUEUE:queue}
+
+minio:
+  url: ${MINIO_URL:http://localhost:9003}
+  accessKey: ${MINIO_ACCESS_KEY:minio_hotel_root_user}
+  secretKey: ${MINIO_SECRET_KEY:minio_hotel_root_password}
+  bucket: ${MINIO_BUCKET_NAME:hotelfiles}
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: TRACE
+        SQL: DEBUG
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET_TOKEN:secret_token}
