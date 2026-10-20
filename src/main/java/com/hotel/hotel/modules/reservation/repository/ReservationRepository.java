@@ -21,7 +21,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
     @Query("SELECT COUNT(r) > 0 FROM Reservation r " +
             "WHERE r.room.id = :roomId " +
-            "AND r.status <> 'CANCELLED' " +
+            "AND r.status <> 'CANCELED' " +
             "AND r.checkInDate < :endDate " +
             "AND r.checkOutDate > :startDate " +
             "AND (:id IS NULL OR r.id <> :id)")
